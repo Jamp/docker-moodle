@@ -3,6 +3,7 @@ services:
   moodle:
     container_name: moodle
     image: moodle
+    restart: always
     build:
       context: ./moodle
     ports:
@@ -19,6 +20,7 @@ services:
   mysql:
     container_name: mysql
     image: mysql
+    restart: always
     command: mysqld --default-authentication-plugin=mysql_native_password --skip-mysqlx
     ports:
       - 3306:3306

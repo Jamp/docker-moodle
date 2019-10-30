@@ -1,8 +1,11 @@
 FROM php:7.2-apache
 
+MAINTAINER Jaro Marval <jampgold@gmail.com>
+LABEL maintaner="Jaro Marval <jampgold@gmail.com>"
+
 RUN apt-get update \
   && apt-get install -y \
-  zlib1g-dev libxml2-dev libzip-dev libicu-dev g++ zip libpng-dev \
+  cron zlib1g-dev libxml2-dev libzip-dev libicu-dev g++ zip libpng-dev \
   && docker-php-ext-configure zip --with-libzip \
   && docker-php-ext-install mysqli \
   && docker-php-ext-install mbstring \
@@ -31,5 +34,11 @@ RUN mkdir /var/moodledata
 RUN chown -R 'www-data':'www-data' /var/moodledata
 RUN chmod -R 700 /var/moodledata
 ADD ./config.php /var/moodle
+
+COPY ./moodle-cron /etc/cron.d/moodle-cron
+RUN chmod 0644 /etc/cron.d/moodle-cron
+RUN crontab /etc/cron.d/moodle-cron
+RUN touch /var/log/cron.log
+CMD cron && tail -f /var/log/cron.log
 
 WORKDIR /var/moodle
